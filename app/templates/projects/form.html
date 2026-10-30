@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}{% if action == 'edit' %}Редактирование{% else %}Новый проект{% endif %} — PromptFlow{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">{% if action == 'edit' %}Редактирование проекта{% else %}Создать проект{% endif %}</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" novalidate>
+                    {{ form.csrf_token }}
+                    <div class="mb-3">
+                        {{ form.title.label(class="form-label") }}
+                        {{ form.title(class="form-control" + (" is-invalid" if form.title.errors else "")) }}
+                        {% for error in form.title.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.description.label(class="form-label") }}
+                        {{ form.description(class="form-control", rows="4") }}
+                        {% for error in form.description.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.visual_style.label(class="form-label") }}
+                        {{ form.visual_style(class="form-control") }}
+                        {% for error in form.visual_style.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.content_format.label(class="form-label") }}
+                        {{ form.content_format(class="form-select") }}
+                        {% for error in form.content_format.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {{ form.submit(class="btn btn-primary w-100") }}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

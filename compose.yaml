@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: promptflow
+      POSTGRES_PASSWORD: promptflow
+      POSTGRES_DB: promptflow
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U promptflow -d promptflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      FLASK_ENV: development
+      FLASK_APP: app:create_app
+      SECRET_KEY: ${SECRET_KEY}
+      DATABASE_URL: postgresql+psycopg2://promptflow:promptflow@db:5432/promptflow
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    command: >
+      sh -c "flask db upgrade && gunicorn --bind 0.0.0.0:5000 app:create_app()"
+
+volumes:
+  postgres_data:

@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Библиотека промптов — PromptFlow{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Библиотека промптов</h2>
+    <a href="{{ url_for('prompts.new') }}" class="btn btn-primary">+ Новый промпт</a>
+</div>
+
+<!-- Поиск и фильтры -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('prompts.list') }}" class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Поиск</label>
+                <input
+                    type="text"
+                    name="search"
+                    class="form-control"
+                    value="{{ search }}"
+                    placeholder="Название, назначение, теги..."
+                >
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Тег</label>
+                <select name="tag" class="form-select">
+                    <option value="">Любой тег</option>
+                    {% for t in all_tags %}
+                        <option value="{{ t }}" {% if tag == t %}selected{% endif %}>{{ t }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Сервис</label>
+                <select name="service" class="form-select">
+                    <option value="">Любой сервис</option>
+                    {% for s in all_services %}
+                        <option value="{{ s }}" {% if service == s %}selected{% endif %}>{{ s }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">Фильтровать</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if prompts %}
+    <div class="row">
+        {% for prompt in prompts %}
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ prompt.name }}</h5>
+                        {% if prompt.purpose %}
+                            <div class="mb-1"><small class="text-muted">{{ prompt.purpose }}</small></div>
+                        {% endif %}
+                        {% if prompt.service %}
+                            <span class="badge bg-info">{{ prompt.service }}</span>
+                        {% endif %}
+                        {% if prompt.tags %}
+                            {% for t in prompt.tags.split(",") %}
+                                <span class="badge bg-secondary">{{ t.strip() }}</span>
+                            {% endfor %}
+                        {% endif %}
+                        <div class="mt-3">
+                            <a href="{{ url_for('prompts.detail', id=prompt.id) }}" class="btn btn-outline-primary">Открыть</a>
+                            <a href="{{ url_for('prompts.edit', id=prompt.id) }}" class="btn btn-outline-warning">Редактировать</a>
+                        </div>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between">
+                        <small class="text-muted">{{ prompt.updated_at.strftime('%d.%m.%Y') if prompt.updated_at else '—' }}</small>
+                        <form method="POST" action="{{ url_for('prompts.delete', id=prompt.id) }}" class="d-inline" data-confirm="Удалить промпт и все его версии?">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="text-center py-5">
+        <p>У вас пока нет промптов. Создайте первый!</p>
+        <a href="{{ url_for('prompts.new') }}" class="btn btn-primary">+ Новый промпт</a>
+    </div>
+{% endif %}
+{% endblock %}

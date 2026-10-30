@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}{% if action == 'edit' %}Редактирование{% else %}Новый промпт{% endif %} — PromptFlow{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">{% if action == 'edit' %}Редактировать промпт{% else %}Создать промпт{% endif %}</h3>
+                {% if action == 'edit' and prompt %}
+                    <a href="{{ url_for('prompts.detail', id=prompt.id) }}" class="btn btn-outline-secondary btn-sm float-end">Назад к промпту</a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <form method="POST" novalidate>
+                    {{ form.csrf_token }}
+                    <div class="mb-3">
+                        {{ form.name.label(class="form-label") }}
+                        {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
+                        {% for error in form.name.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.purpose.label(class="form-label") }}
+                        {{ form.purpose(class="form-control") }}
+                        {% for error in form.purpose.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.service.label(class="form-label") }}
+                        {{ form.service(class="form-control") }}
+                        {% for error in form.service.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.tags.label(class="form-label") }}
+                        {{ form.tags(class="form-control", placeholder="пример: видео, ютуб, reels") }}
+                        <div class="form-text">Теги через запятую.</div>
+                        {% for error in form.tags.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <hr>
+
+                    <div class="mb-3">
+                        {{ version_form.prompt_text.label(class="form-label") }}
+                        {{ version_form.prompt_text(class="form-control", rows="6") }}
+                        {% for error in version_form.prompt_text.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ version_form.negative_prompt.label(class="form-label") }}
+                        {{ version_form.negative_prompt(class="form-control", rows="3") }}
+                        {% for error in version_form.negative_prompt.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            {{ version_form.camera_params.label(class="form-label") }}
+                            {{ version_form.camera_params(class="form-control") }}
+                            {% for error in version_form.camera_params.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            {{ version_form.lighting.label(class="form-label") }}
+                            {{ version_form.lighting(class="form-control") }}
+                            {% for error in version_form.lighting.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            {{ version_form.visual_style.label(class="form-label") }}
+                            {{ version_form.visual_style(class="form-control") }}
+                            {% for error in version_form.visual_style.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            {{ version_form.frame_format.label(class="form-label") }}
+                            {{ version_form.frame_format(class="form-control") }}
+                            {% for error in version_form.frame_format.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        {{ version_form.notes.label(class="form-label") }}
+                        {{ version_form.notes(class="form-control", rows="3") }}
+                        {% for error in version_form.notes.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ version_form.change_note.label(class="form-label") }}
+                        {{ version_form.change_note(class="form-control") }}
+                        {% for error in version_form.change_note.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    {{ version_form.submit(class="btn btn-primary w-100") }}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

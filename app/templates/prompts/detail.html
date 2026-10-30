@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}{{ prompt.name }} — PromptFlow{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>{{ prompt.name }}</h2>
+    <div>
+        <a href="{{ url_for('prompts.edit', id=prompt.id) }}" class="btn btn-warning me-2">Редактировать</a>
+        <a href="{{ url_for('prompts.new') }}" class="btn btn-outline-secondary">+ Новый промпт</a>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Сведения</h5>
+                {% if prompt.purpose %}
+                    <p><strong>Назначение:</strong> {{ prompt.purpose }}</p>
+                {% endif %}
+                {% if prompt.service %}
+                    <p><strong>Сервис:</strong> {{ prompt.service }}</p>
+                {% endif %}
+                {% if prompt.tags %}
+                    <p><strong>Теги:</strong>
+                        {% for t in prompt.tags.split(",") %}
+                            <span class="badge bg-secondary">{{ t.strip() }}</span>
+                        {% endfor %}
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Версий: {{ prompt.versions|length }}</h5>
+                <a href="{{ url_for('prompts.edit', id=prompt.id) }}" class="btn btn-primary">+ Новая версия</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h3>Версии</h3>
+{% if prompt.versions %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Версия</th>
+                    <th>Текст промпта</th>
+                    <th>Создана</th>
+                    <th>Оценка</th>
+                    <th class="text-end">Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for version in prompt.versions %}
+                    <tr>
+                        <td>
+                            <span class="badge bg-primary">v{{ version.version_number }}</span>
+                        </td>
+                        <td>{{ version.prompt_text[:100] }}{% if version.prompt_text|length > 100 %}...{% endif %}</td>
+                        <td>{{ version.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                        <td>
+                            {% if version.average_rating is not none %}
+                                <strong>{{ "%.1f"|format(version.average_rating) }}/5</strong>
+                                ({{ version.ratings|length }})
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <a
+                                href="{{ url_for('prompts.version_detail', prompt_id=prompt.id, version_id=version.id) }}"
+                                class="btn btn-sm btn-outline-primary"
+                            >
+                                Подробнее
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="text-center py-3">
+        <p>У этого промпта пока нет версий.</p>
+    </div>
+{% endif %}
+{% endblock %}

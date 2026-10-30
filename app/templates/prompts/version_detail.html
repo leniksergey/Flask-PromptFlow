@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}v{{ version.version_number }} — {{ prompt.name }} — PromptFlow{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        {{ prompt.name }}
+        <span class="badge bg-primary ms-2">v{{ version.version_number }}</span>
+    </h2>
+    <a href="{{ url_for('prompts.detail', id=prompt.id) }}" class="btn btn-outline-secondary">Назад к промпту</a>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Текст промпта</h5>
+            </div>
+            <div class="card-body">
+                <pre class="bg-light p-3 rounded">{{ version.prompt_text }}</pre>
+            </div>
+        </div>
+        {% if version.negative_prompt %}
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Negative prompt</h5>
+                </div>
+                <div class="card-body">
+                    <pre class="bg-light p-3 rounded">{{ version.negative_prompt }}</pre>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Параметры</h5>
+                {% if version.camera_params %}
+                    <p><strong>Камера:</strong> {{ version.camera_params }}</p>
+                {% endif %}
+                {% if version.lighting %}
+                    <p><strong>Освещение:</strong> {{ version.lighting }}</p>
+                {% endif %}
+                {% if version.visual_style %}
+                    <p><strong>Стиль:</strong> {{ version.visual_style }}</p>
+                {% endif %}
+                {% if version.frame_format %}
+                    <p><strong>Кадр:</strong> {{ version.frame_format }}</p>
+                {% endif %}
+                {% if version.notes %}
+                    <p><strong>Заметки:</strong> {{ version.notes }}</p>
+                {% endif %}
+                {% if version.change_note %}
+                    <p><strong>Причина изменения:</strong> {{ version.change_note }}</p>
+                {% endif %}
+                <p><strong>Создана:</strong> {{ version.created_at.strftime('%d.%m.%Y %H:%M') }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Оценки -->
+<h3>Оценка результата</h3>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Ваша оценка</h5>
+                {% if user_rating %}
+                    <p><strong>Оценка:</strong> {{ user_rating.score }}/5</p>
+                    {% if user_rating.comment %}
+                        <p><strong>Комментарий:</strong> {{ user_rating.comment }}</p>
+                    {% endif %}
+                    <form method="POST" action="{{ url_for('prompts.rate_version', prompt_id=prompt.id, version_id=version.id) }}">
+                        {{ form.csrf_token }}
+                        {{ form.score }}
+                        {{ form.comment(class="form-control", rows="3") }}
+                        {{ form.submit(class="btn btn-primary mt-2") }}
+                    </form>
+                {% else %}
+                    <form method="POST" action="{{ url_for('prompts.rate_version', prompt_id=prompt.id, version_id=version.id) }}">
+                        {{ form.csrf_token }}
+                        {{ form.score(class="form-select") }}
+                        {{ form.comment(class="form-control", rows="3", placeholder="Ваш комментарий о результате...") }}
+                        {{ form.submit(class="btn btn-primary mt-2") }}
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Средняя оценка</h5>
+                {% if version.average_rating is not none %}
+                    <h2 class="text-primary">{{ "%.1f"|format(version.average_rating) }}/5</h2>
+                    <p>{{ version.ratings|length }} оценок</p>
+                {% else %}
+                    <p class="text-muted">Оценок пока нет</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Дашборд — PromptFlow{% endblock %}
+
+{% block content %}
+<h2>Дашборд</h2>
+<p>Добро пожаловать, {{ current_user.email }}!</p>
+
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="card text-center bg-primary text-white">
+            <div class="card-body">
+                <h5 class="card-title">Проектов</h5>
+                <h3 class="card-text">{{ projects_count }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center bg-success text-white">
+            <div class="card-body">
+                <h5 class="card-title">Сцен</h5>
+                <h3 class="card-text">{{ scenes_count }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center bg-info text-white">
+            <div class="card-body">
+                <h5 class="card-title">Промптов</h5>
+                <h3 class="card-text">{{ prompts_count }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center bg-warning text-white">
+            <div class="card-body">
+                <h5 class="card-title">Версий промптов</h5>
+                <h3 class="card-text">{{ versions_count }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if avg_rating is not none %}
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card text-center bg-secondary text-white">
+            <div class="card-body">
+                <h5 class="card-title">Средняя оценка</h5>
+                <h3 class="card-text">{{ "%.1f"|format(avg_rating) }}/5</h3>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if top_versions %}
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Топ-3 высоко оценённые версии</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Промпт</th>
+                            <th>Версия</th>
+                            <th>Средняя оценка</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for version, avg_score in top_versions %}
+                        <tr>
+                            <td>{{ version.prompt.name }}</td>
+                            <td><span class="badge bg-primary">v{{ version.version_number }}</span></td>
+                            <td>{{ "%.1f"|format(avg_score) }}/5</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="mt-4">
+    <a href="{{ url_for('projects.list') }}" class="btn btn-primary">Перейти к проектам</a>
+    <a href="{{ url_for('prompts.list') }}" class="btn btn-outline-secondary">Перейти к промптам</a>
+</div>
+{% endblock %}

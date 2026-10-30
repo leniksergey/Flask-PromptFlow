@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}{% if action == 'edit' %}Редактирование сцены{% else %}Новая сцена{% endif %} — PromptFlow{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">{% if action == 'edit' %}Редактирование сцены{% else %}Новая сцена{% endif
+                    %}</h3>
+                <a href="{{ url_for('projects.detail', id=project.id) }}"
+                   class="btn btn-outline-secondary btn-sm float-end">Назад к проекту</a>
+            </div>
+            <div class="card-body">
+                <form method="POST" novalidate>
+                    {{ form.csrf_token }}
+                    <div class="mb-3">
+                        {{ form.order.label(class="form-label") }}
+                        {{ form.order(class="form-control" + (" is-invalid" if form.order.errors else "")) }}
+                        {% for error in form.order.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.title.label(class="form-label") }}
+                        {{ form.title(class="form-control" + (" is-invalid" if form.title.errors else "")) }}
+                        {% for error in form.title.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.description.label(class="form-label") }}
+                        {{ form.description(class="form-control", rows="4") }}
+                        {% for error in form.description.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.duration_seconds.label(class="form-label") }}
+                        {{ form.duration_seconds(class="form-control" + (" is-invalid" if form.duration_seconds.errors
+                        else "")) }}
+                        {% for error in form.duration_seconds.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.status.label(class="form-label") }}
+                        {{ form.status(class="form-select" + (" is-invalid" if form.status.errors else "")) }}
+                        {% for error in form.status.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.prompt_id.label(class="form-label") }}
+                        {{ form.prompt_id(class="form-select" + (" is-invalid" if form.prompt_id.errors else "")) }}
+                        <div class="form-text">Необязательно. В списке только ваши промпты.</div>
+                        {% for error in form.prompt_id.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {{ form.submit(class="btn btn-primary w-100") }}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
